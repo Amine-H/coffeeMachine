@@ -9,10 +9,13 @@ public class CoffeeMachine extends JComponent{
     m_rHint = new RenderingHints(
       RenderingHints.KEY_ANTIALIASING,
       RenderingHints.VALUE_ANTIALIAS_ON);
+      m_img = Toolkit.getDefaultToolkit().getImage("img.png");
   }
   public void paint(Graphics g){
     Graphics2D g2d = (Graphics2D) g;
     g2d.setRenderingHints(m_rHint);
+    g2d.drawImage(m_img,0,0,null);
   }
   private RenderingHints m_rHint;
+  private Image m_img;
 }

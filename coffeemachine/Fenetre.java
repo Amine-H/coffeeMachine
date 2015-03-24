@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class Fenetre extends JFrame{
   public Fenetre(){
-    setSize(500,700);
+    setSize(500,540);
 		setTitle("CoffeeMachine Simulation");
 		setResizable(false);
 		setLocationRelativeTo(null);
