@@ -15,9 +15,85 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_trash = Toolkit.getDefaultToolkit().getImage("trash-bin.png");
       addMouseMotionListener(this);
       addMouseListener(this);
-      m_heldObject = null;//let's make sure these are null..
+      m_heldObject = null;//let's make sure these are well initialized..
       m_coffeeSlot = null;
       m_refundSlot = null;
+      m_money = 0;
+      m_state = MachineState.STATE_ZERO;
+  }
+  //these are functionality functions
+  private void petit(){
+    switch(m_state){
+      case STATE_ZERO://do nothing
+      break;
+      case STATE_ONE://serve small and go to state 0
+        serve_petit();
+        this.m_state = MachineState.STATE_ZERO;
+      break;
+      case STATE_TWO:
+        serve_petit();
+        refund(1);
+        this.m_state = MachineState.STATE_ZERO;
+      break;
+    }
+  }
+  private void grand(){
+    switch(m_state){
+      case STATE_ZERO://do nothing
+      break;
+      case STATE_ONE://do nothing
+      break;
+      case STATE_TWO://serve big and go to state 0
+        serve_grand();
+        this.m_state = MachineState.STATE_ZERO;
+      break;
+    }
+  }
+  private void serve_petit(){
+
+  }
+  private void serve_grand(){
+
+  }
+  private void refund(int money){
+
+  }
+  private void inserer(int money){
+    switch(m_state){
+      case STATE_ZERO://insert 1 or two dh and go to next state
+        this.m_money += money;
+        if(money == 1){
+          this.m_state = MachineState.STATE_ONE;
+        }
+        else{
+          this.m_state = MachineState.STATE_TWO;
+        }
+      break;
+      case STATE_ONE:
+        this.m_money += 1;
+        this.m_state = MachineState.STATE_TWO;
+        if(money == 2){
+          refund(1);
+        }
+      break;
+      case STATE_TWO:
+        refund(money);
+      break;
+    }
+  }
+  private void annuler(){
+    switch(m_state){
+      case STATE_ZERO://do nothing
+      break;
+      case STATE_ONE:
+        refund(1);
+        m_state = MachineState.STATE_ZERO;
+      break;
+      case STATE_TWO:
+        refund(2);
+        m_state = MachineState.STATE_ZERO;
+      break;
+    }
   }
   public void paint(Graphics g){
     super.paintComponent(g);
@@ -29,6 +105,10 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     g2d.drawImage(m_twoDH,420,0,this);
     g2d.drawImage(m_trash,365,343,this);
     //end of static images
+    //draw money
+    g2d.setColor(Color.red);
+    g2d.setFont(new Font( "Times New Roman", Font.BOLD,22));
+    g2d.drawString(String.valueOf(m_money),190,45);
     if(m_heldObject != null){//draw held object
       m_heldObject.drawIN(g2d,this);
     }
@@ -42,7 +122,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private boolean isHodling(){//returns true if the user is holding something
     return m_heldObject != null;
   }
-  public void mouseClicked(MouseEvent e){
+  public void mousePressed(MouseEvent e){
     int X = e.getX();int Y = e.getY();//to save me some writing
     System.out.println("cliked "+X+" "+Y);
     if(X >= 350 && X<= 406 && Y >= 0 && Y<= 56){//user clicked one DH
@@ -60,21 +140,34 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         m_heldObject = null;
       }
     }///these are machine buttons
-    else if(X >= 114 && X<= 132 && Y >= 66 && Y<= 82){//user clicked petit BUTTON
+    else if(X >= 150 && X<= 167 && Y >= 67 && Y<= 83){//user clicked petit BUTTON
       if(!isHodling()){
-
+        petit();
+        System.out.println("petit");
       }
     }
-    else if(X >= 150 && X<= 167 && Y >= 67 && Y<= 83){//user clicked grand BUTTON
+    else if(X >= 114 && X<= 132 && Y >= 66 && Y<= 82){//user clicked grand BUTTON
       if(!isHodling()){
+        grand();
+        System.out.println("grand");
       }
     }
     else if(X >= 180 && X<= 193 && Y >= 69 && Y<= 81){//user clicked cancel BUTTON
       if(!isHodling()){
+        annuler();
       }
     }
-    else if(X >= 180 && X<= 193 && Y >= 69 && Y<= 81){//user clicked insert money slot
+    else if(X >= 248 && X<= 286 && Y >= 21 && Y<= 60){//user clicked insert money slot
+      System.out.println("yup");
       if(isHodling()){
+        if(m_heldObject.getType() == MovableType.ONE_DH){
+          inserer(1);
+          m_heldObject = null;
+        }
+        else if(m_heldObject.getType() == MovableType.TWO_DH){
+          inserer(2);
+          m_heldObject = null;
+        }
       }
     }//end of machine buttons
   }
@@ -89,7 +182,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   public void mouseExited(MouseEvent e){}
   public void mouseEntered(MouseEvent e){}
   public void mouseReleased(MouseEvent e){}
-  public void mousePressed(MouseEvent e){}//end
+  public void mouseClicked(MouseEvent e){}//end
   private RenderingHints m_rHint;
   private Image m_machine;
   private Image m_trash;
@@ -98,6 +191,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private Movable m_coffeeSlot;
   private Movable m_refundSlot;
   private Movable m_heldObject;//something that the user is moving around with his mouse
+  //these are functionality vars
+  private int m_money;
+  private MachineState m_state;
 }
 
 class Movable{
@@ -114,8 +210,11 @@ class Movable{
       case TWO_DH:
         this.m_img = Toolkit.getDefaultToolkit().getImage("two-dh.png");
       break;
-      case COFFEE:
-        this.m_img = Toolkit.getDefaultToolkit().getImage("coffee.png");
+      case COFFEE_SMALL:
+        this.m_img = Toolkit.getDefaultToolkit().getImage("coffee-small.png");
+      break;
+      case COFFEE_BIG:
+        this.m_img = Toolkit.getDefaultToolkit().getImage("coffee-big.png");
       break;
     }
   }
@@ -139,8 +238,15 @@ class Movable{
   }
 }
 
+enum MachineState{
+  STATE_ZERO,
+  STATE_ONE,
+  STATE_TWO
+}
+
 enum MovableType{
   ONE_DH,
   TWO_DH,
-  COFFEE
+  COFFEE_SMALL,
+  COFFEE_BIG
 }
