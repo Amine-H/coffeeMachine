@@ -75,8 +75,11 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void refund(int money){
-    System.out.println("rendre "+money);
     this.m_money -= money;
+    Movable drahm = new Movable((money == 1)?MovableType.ONE_DH:MovableType.TWO_DH);
+    drahm.setX(126);
+    drahm.setY(440);
+    m_refundSlot = drahm;
   }
   private void inserer(int money){
     this.m_money += money;
@@ -189,11 +192,23 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       }
     }//end of machine buttons
     else if(m_coffeeSlot != null){//user clicks on coffe
-      if(m_coffeeSlot.getType() == COFFEE_SMALL){//it's a small coffee
-
+      if(m_coffeeSlot.getType() == MovableType.COFFEE_SMALL){//it's a small coffee
+        if(X >= 212 && X<= 234 && Y >= 458 && Y<= 496){
+          m_heldObject = m_coffeeSlot;//put it in the user's hand :D
+          m_coffeeSlot = null;
+        }
       }
       else{//it's a big one
-
+        if(X >= 212 && X<= 264 && Y >= 433 && Y<= 503){
+          m_heldObject = m_coffeeSlot;
+          m_coffeeSlot = null;
+        }
+      }
+    }
+    else if(m_refundSlot != null){//user wants his money
+      if(X >= 130 && X<= 180 && Y >= 440 && Y<= 493){
+        m_heldObject = m_refundSlot;
+        m_refundSlot = null;
       }
     }
   }
