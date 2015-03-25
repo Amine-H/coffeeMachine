@@ -27,10 +27,12 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       case STATE_ZERO://do nothing
       break;
       case STATE_ONE://serve small and go to state 0
+        m_money -= 1;
         serve_petit();
         this.m_state = MachineState.STATE_ZERO;
       break;
       case STATE_TWO:
+        m_money -= 1;
         serve_petit();
         refund(1);
         this.m_state = MachineState.STATE_ZERO;
@@ -44,6 +46,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       case STATE_ONE://do nothing
       break;
       case STATE_TWO://serve big and go to state 0
+        m_money -= 2;
         serve_grand();
         this.m_state = MachineState.STATE_ZERO;
       break;
@@ -56,6 +59,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
 
   }
   private void refund(int money){
+    System.out.println("rendre "+money);
     this.m_money -= money;
   }
   private void inserer(int money){
