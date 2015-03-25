@@ -12,6 +12,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_machine = Toolkit.getDefaultToolkit().getImage("img.png");
       m_oneDH = Toolkit.getDefaultToolkit().getImage("one-dh.png");
       m_twoDH = Toolkit.getDefaultToolkit().getImage("two-dh.png");
+      m_trash = Toolkit.getDefaultToolkit().getImage("trash-bin.png");
       addMouseMotionListener(this);
       addMouseListener(this);
       m_heldObject = null;//let's make sure it's null..
@@ -24,6 +25,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     g2d.drawImage(m_machine,0,0,this);
     g2d.drawImage(m_oneDH,350,0,this);
     g2d.drawImage(m_twoDH,420,0,this);
+    g2d.drawImage(m_trash,365,343,this);
     //end of static images
     //draw held object
     if(m_heldObject != null){
@@ -35,14 +37,17 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     System.out.println("cliked "+X+" "+Y);
     if(X >= 350 && X<= 406 && Y >= 0 && Y<= 56){//user clicked one DH
       if(!isHodling()){
-        System.out.println("one");
         m_heldObject = new Movable(MovableType.ONE_DH);
       }
     }
     else if(X >= 420 && X<= 476 && Y >= 0 && Y<= 56){//user clicked two DH
       if(!isHodling()){
-        System.out.println("two");
         m_heldObject = new Movable(MovableType.TWO_DH);
+      }
+    }
+    else if(X >= 365 && X<= 485 && Y >= 343 && Y<= 497){//use clicked trash bin
+      if(isHodling()){
+        m_heldObject = null;
       }
     }
   }
@@ -63,6 +68,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   public void mousePressed(MouseEvent e){}//end
   private RenderingHints m_rHint;
   private Image m_machine;
+  private Image m_trash;
   private Image m_oneDH;
   private Image m_twoDH;
   private Movable m_heldObject;//something that the user is moving around with his mouse
