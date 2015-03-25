@@ -53,10 +53,26 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void serve_petit(){
-
+    if(m_coffeeSlot == null){
+      Movable petit = new Movable(MovableType.COFFEE_SMALL);
+      petit.setX(212);
+      petit.setY(458);
+      m_coffeeSlot = petit;
+    }
+    else{
+      javax.swing.JOptionPane.showMessageDialog(null,"Prennez votre cafe!");
+    }
   }
   private void serve_grand(){
-
+    if(m_coffeeSlot == null){
+      Movable big = new Movable(MovableType.COFFEE_BIG);
+      big.setX(212);
+      big.setY(434);
+      m_coffeeSlot = big;
+    }
+    else{
+      javax.swing.JOptionPane.showMessageDialog(null,"Prennez votre cafe!");
+    }
   }
   private void refund(int money){
     System.out.println("rendre "+money);
@@ -172,6 +188,14 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         }
       }
     }//end of machine buttons
+    else if(m_coffeeSlot != null){//user clicks on coffe
+      if(m_coffeeSlot.getType() == COFFEE_SMALL){//it's a small coffee
+
+      }
+      else{//it's a big one
+
+      }
+    }
   }
 	public void mouseMoved(MouseEvent e){
     if(isHodling()){
