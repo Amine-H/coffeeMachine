@@ -56,12 +56,12 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
 
   }
   private void refund(int money){
-
+    this.m_money -= money;
   }
   private void inserer(int money){
+    this.m_money += money;
     switch(m_state){
       case STATE_ZERO://insert 1 or two dh and go to next state
-        this.m_money += money;
         if(money == 1){
           this.m_state = MachineState.STATE_ONE;
         }
@@ -70,7 +70,6 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         }
       break;
       case STATE_ONE:
-        this.m_money += 1;
         this.m_state = MachineState.STATE_TWO;
         if(money == 2){
           refund(1);
@@ -158,13 +157,12 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       }
     }
     else if(X >= 248 && X<= 286 && Y >= 21 && Y<= 60){//user clicked insert money slot
-      System.out.println("yup");
       if(isHodling()){
-        if(m_heldObject.getType() == MovableType.ONE_DH){
+        if(m_heldObject.getType() == MovableType.ONE_DH){//inserer 1DH
           inserer(1);
           m_heldObject = null;
         }
-        else if(m_heldObject.getType() == MovableType.TWO_DH){
+        else if(m_heldObject.getType() == MovableType.TWO_DH){//inserer 2DH
           inserer(2);
           m_heldObject = null;
         }
