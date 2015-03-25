@@ -146,7 +146,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   }
   public void mousePressed(MouseEvent e){
     int X = e.getX();int Y = e.getY();//to save me some writing
-    System.out.println("cliked "+X+" "+Y);
+    //System.out.println("cliked "+X+" "+Y);
     if(X >= 350 && X<= 406 && Y >= 0 && Y<= 56){//user clicked one DH
       if(!isHodling()){
         m_heldObject = new Movable(MovableType.ONE_DH);
@@ -165,13 +165,13 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     else if(X >= 150 && X<= 167 && Y >= 67 && Y<= 83){//user clicked petit BUTTON
       if(!isHodling()){
         petit();
-        System.out.println("petit");
+        //System.out.println("petit");
       }
     }
     else if(X >= 114 && X<= 132 && Y >= 66 && Y<= 82){//user clicked grand BUTTON
       if(!isHodling()){
         grand();
-        System.out.println("grand");
+        //System.out.println("grand");
       }
     }
     else if(X >= 180 && X<= 193 && Y >= 69 && Y<= 81){//user clicked cancel BUTTON
