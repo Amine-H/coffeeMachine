@@ -9,13 +9,15 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     m_rHint = new RenderingHints(
       RenderingHints.KEY_ANTIALIASING,
       RenderingHints.VALUE_ANTIALIAS_ON);
-      m_machine = Toolkit.getDefaultToolkit().getImage("img.png");
+      m_machine = Toolkit.getDefaultToolkit().getImage("machine.png");
       m_oneDH = Toolkit.getDefaultToolkit().getImage("one-dh.png");
       m_twoDH = Toolkit.getDefaultToolkit().getImage("two-dh.png");
       m_trash = Toolkit.getDefaultToolkit().getImage("trash-bin.png");
       addMouseMotionListener(this);
       addMouseListener(this);
-      m_heldObject = null;//let's make sure it's null..
+      m_heldObject = null;//let's make sure these are null..
+      m_coffeeSlot = null;
+      m_refundSlot = null;
   }
   public void paint(Graphics g){
     super.paintComponent(g);
@@ -27,10 +29,18 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     g2d.drawImage(m_twoDH,420,0,this);
     g2d.drawImage(m_trash,365,343,this);
     //end of static images
-    //draw held object
-    if(m_heldObject != null){
+    if(m_heldObject != null){//draw held object
       m_heldObject.drawIN(g2d,this);
     }
+    if(m_coffeeSlot != null){//draw coffee
+      m_coffeeSlot.drawIN(g2d,this);
+    }
+    if(m_refundSlot != null){//draw refund money
+      m_refundSlot.drawIN(g2d,this);
+    }
+  }
+  private boolean isHodling(){//returns true if the user is holding something
+    return m_heldObject != null;
   }
   public void mouseClicked(MouseEvent e){
     int X = e.getX();int Y = e.getY();//to save me some writing
@@ -45,14 +55,28 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         m_heldObject = new Movable(MovableType.TWO_DH);
       }
     }
-    else if(X >= 365 && X<= 485 && Y >= 343 && Y<= 497){//use clicked trash bin
+    else if(X >= 365 && X<= 485 && Y >= 343 && Y<= 497){//user clicked trash bin
       if(isHodling()){
         m_heldObject = null;
       }
+    }///these are machine buttons
+    else if(X >= 114 && X<= 132 && Y >= 66 && Y<= 82){//user clicked petit BUTTON
+      if(!isHodling()){
+
+      }
     }
-  }
-  private boolean isHodling(){
-    return m_heldObject != null;
+    else if(X >= 150 && X<= 167 && Y >= 67 && Y<= 83){//user clicked grand BUTTON
+      if(!isHodling()){
+      }
+    }
+    else if(X >= 180 && X<= 193 && Y >= 69 && Y<= 81){//user clicked cancel BUTTON
+      if(!isHodling()){
+      }
+    }
+    else if(X >= 180 && X<= 193 && Y >= 69 && Y<= 81){//user clicked insert money slot
+      if(isHodling()){
+      }
+    }//end of machine buttons
   }
 	public void mouseMoved(MouseEvent e){
     if(isHodling()){
@@ -71,6 +95,8 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private Image m_trash;
   private Image m_oneDH;
   private Image m_twoDH;
+  private Movable m_coffeeSlot;
+  private Movable m_refundSlot;
   private Movable m_heldObject;//something that the user is moving around with his mouse
 }
 
@@ -104,6 +130,9 @@ class Movable{
   }
   public int getY(){
     return this.m_y;
+  }
+  public MovableType getType(){
+    return this.m_type;
   }
   public void drawIN(Graphics2D g2d,CoffeeMachine machine){
     g2d.drawImage(m_img,m_x,m_y,machine);
