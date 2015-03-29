@@ -25,6 +25,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private void petit(){
     switch(m_state){
       case STATE_ZERO://do nothing
+        Speaker.say("insufficient money");
       break;
       case STATE_ONE://serve small and go to state 0
         m_money -= 1;
@@ -42,8 +43,10 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private void grand(){
     switch(m_state){
       case STATE_ZERO://do nothing
+        Speaker.say("insufficient money");
       break;
       case STATE_ONE://do nothing
+        Speaker.say("insufficient money");
       break;
       case STATE_TWO://serve big and go to state 0
         m_money -= 2;
@@ -58,8 +61,10 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       petit.setX(212);
       petit.setY(458);
       m_coffeeSlot = petit;
+      Speaker.say("coffee served, thanks for using our service.");
     }
     else{
+      Speaker.say("please take your coffee");
       javax.swing.JOptionPane.showMessageDialog(null,"Prennez votre cafe!");
     }
   }
@@ -69,8 +74,10 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       big.setX(212);
       big.setY(434);
       m_coffeeSlot = big;
+      Speaker.say("coffee served, thanks for using our service.");
     }
     else{
+      Speaker.say("please take your coffee");
       javax.swing.JOptionPane.showMessageDialog(null,"Prennez votre cafe!");
     }
   }
@@ -80,6 +87,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     drahm.setX(126);
     drahm.setY(440);
     m_refundSlot = drahm;
+    Speaker.say("there you go, "+money+" dirham. take it.");
   }
   private void inserer(int money){
     this.m_money += money;
@@ -102,6 +110,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         refund(money);
       break;
     }
+    Speaker.say("you now have "+this.m_money+" dirham");
   }
   private void annuler(){
     switch(m_state){
@@ -159,6 +168,12 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
     else if(X >= 365 && X<= 485 && Y >= 343 && Y<= 497){//user clicked trash bin
       if(isHodling()){
+        if(m_heldObject.getType() == MovableType.COFFEE_BIG || m_heldObject.getType() == MovableType.COFFEE_SMALL){
+          Speaker.say("coffee thrown");
+        }
+        else{
+          Speaker.say("money thrown");
+        }
         m_heldObject = null;
       }
     }///these are machine buttons
