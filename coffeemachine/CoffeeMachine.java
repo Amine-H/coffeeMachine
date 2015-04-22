@@ -20,6 +20,8 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_coffeeSlot = null;
       m_refundSlot = null;
       m_money = 0;
+      availableCups = 100;
+      availableMoney = 1000;
       m_state = MachineState.STATE_ZERO;
       m_powerstate = PowerState.ON;
   }
@@ -64,6 +66,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void serve_petit(){
+    if(this.availableCups < 1){
+      return;
+    }
     if(m_coffeeSlot == null){
       Movable petit = new Movable(MovableType.COFFEE_SMALL);
       petit.setX(212);
@@ -77,6 +82,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void serve_grand(){
+    if(this.availableCups < 1){
+      return;
+    }
     if(m_coffeeSlot == null){
       Movable big = new Movable(MovableType.COFFEE_BIG);
       big.setX(212);
@@ -90,6 +98,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void refund(int money){
+    if(this.availableMoney - money < 0){
+      return;
+    }
     this.m_money -= money;
     Movable drahm = new Movable((money == 1)?MovableType.ONE_DH:MovableType.TWO_DH);
     drahm.setX(126);
@@ -266,6 +277,20 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_powerstate = PowerState.ON;
     }
   }
+  public void addMoney(int N){
+    this.availableMoney += N;
+  }
+  public void remMoney(int N){
+    if(this.availableMoney - N >= 0){
+      this.availableMoney -= N;
+    }
+  }
+  public void addCups(int N){
+    this.availableCups += N;
+  }
+  public int getAvailableMoney(){
+    return this.availableMoney;
+  }
   public void mouseDragged(MouseEvent e){}//we don't have to implement these...
   public void mouseExited(MouseEvent e){}
   public void mouseEntered(MouseEvent e){}
@@ -282,6 +307,8 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   private Movable m_heldObject;//something that the user is moving around with his mouse
   //these are functionality vars
   private int m_money;
+  private int availableMoney;
+  private int availableCups;
   private MachineState m_state;
   private PowerState m_powerstate;
 }
@@ -358,6 +385,7 @@ class Tech extends JFrame{
 
     //buttons
     bTogglePower = new JButton("Eteindre");
+    bTogglePower.setBackground(Color.RED);
     bAddMoney = new JButton("Ajouter Argent");
     bRemMoney = new JButton("Enlever Argent");
     bAddCups = new JButton("Ajouter Gobelets");
@@ -365,6 +393,39 @@ class Tech extends JFrame{
     bTogglePower.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent e) {
         togglePower();
+      }
+    });
+
+    bAddMoney.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        String input = JOptionPane.showInputDialog(null,"veuillez entrer combien");
+        int N = 0;
+        try{
+          N = Integer.parseInt(input);
+          machine.addMoney(N);
+        }catch(Exception eam){}
+      }
+    });
+
+    bRemMoney.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        String input = JOptionPane.showInputDialog(null,"veuillez entrer combien",""+machine.getAvailableMoney());
+        int N = 0;
+        try{
+          N = Integer.parseInt(input);
+          machine.remMoney(N);
+        }catch(Exception erm){}
+      }
+    });
+
+    bAddCups.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        String input = JOptionPane.showInputDialog(null,"veuillez entrer combien");
+        int N = 0;
+        try{
+          N = Integer.parseInt(input);
+          machine.addCups(N);
+        }catch(Exception eac){}
       }
     });
 
@@ -376,9 +437,11 @@ class Tech extends JFrame{
   private void togglePower(){
     if(machine.getPowerState() == PowerState.ON){
       this.bTogglePower.setText("Allumer");
+      this.bTogglePower.setBackground(Color.GREEN);
     }
     else{
       this.bTogglePower.setText("Eteindre");
+      this.bTogglePower.setBackground(Color.RED);
     }
     machine.togglePower();
   }
