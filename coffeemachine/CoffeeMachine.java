@@ -13,6 +13,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_oneDH = Toolkit.getDefaultToolkit().getImage("one-dh.png");
       m_twoDH = Toolkit.getDefaultToolkit().getImage("two-dh.png");
       m_trash = Toolkit.getDefaultToolkit().getImage("trash-bin.png");
+      m_techGuy = Toolkit.getDefaultToolkit().getImage("tech.png");
       addMouseMotionListener(this);
       addMouseListener(this);
       m_heldObject = null;//let's make sure these are well initialized..
@@ -20,9 +21,13 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       m_refundSlot = null;
       m_money = 0;
       m_state = MachineState.STATE_ZERO;
+      m_powerstate = PowerState.ON;
   }
   //these are functionality functions
   private void petit(){
+    if(m_powerstate != PowerState.ON){
+      return;
+    }
     switch(m_state){
       case STATE_ZERO://do nothing
         Speaker.say("insufficient money");
@@ -41,6 +46,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
   }
   private void grand(){
+    if(m_powerstate != PowerState.ON){
+      return;
+    }
     switch(m_state){
       case STATE_ZERO://do nothing
         Speaker.say("insufficient money");
@@ -90,6 +98,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     Speaker.say("there you go, "+money+" dirham. take it.");
   }
   private void inserer(int money){
+    if(m_powerstate != PowerState.ON){
+      return;
+    }
     this.m_money += money;
     switch(m_state){
       case STATE_ZERO://insert 1 or two dh and go to next state
@@ -113,6 +124,9 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     Speaker.say("you now have "+this.m_money+" dirham");
   }
   private void annuler(){
+    if(m_powerstate != PowerState.ON){
+      return;
+    }
     switch(m_state){
       case STATE_ZERO://do nothing
       break;
@@ -135,11 +149,14 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     g2d.drawImage(m_oneDH,350,0,this);
     g2d.drawImage(m_twoDH,420,0,this);
     g2d.drawImage(m_trash,365,343,this);
+    g2d.drawImage(m_techGuy,367,143,this);
     //end of static images
     //draw money
-    g2d.setColor(Color.red);
-    g2d.setFont(new Font( "Times New Roman", Font.BOLD,22));
-    g2d.drawString(String.valueOf(m_money),190,45);
+    if(m_powerstate == PowerState.ON){
+      g2d.setColor(Color.red);
+      g2d.setFont(new Font( "Times New Roman", Font.BOLD,22));
+      g2d.drawString(String.valueOf(m_money),190,45);
+    }
     if(m_heldObject != null){//draw held object
       m_heldObject.drawIN(g2d,this);
     }
@@ -206,6 +223,10 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         }
       }
     }//end of machine buttons
+    else if(X >= 374 && X<= 463 && Y >= 140 && Y<= 239){//tech
+      System.out.println("technicien");
+      Tech techFen = new Tech(this);
+    }
     else if(m_coffeeSlot != null){//user clicks on coffe
       if(m_coffeeSlot.getType() == MovableType.COFFEE_SMALL){//it's a small coffee
         if(X >= 212 && X<= 234 && Y >= 458 && Y<= 496){
@@ -234,6 +255,17 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     }
     this.repaint();
   }
+  public PowerState getPowerState(){
+    return m_powerstate;
+  }
+  public void togglePower(){
+    if(m_powerstate == PowerState.ON){
+      m_powerstate = PowerState.OFF;
+    }
+    else{
+      m_powerstate = PowerState.ON;
+    }
+  }
   public void mouseDragged(MouseEvent e){}//we don't have to implement these...
   public void mouseExited(MouseEvent e){}
   public void mouseEntered(MouseEvent e){}
@@ -241,6 +273,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   public void mouseClicked(MouseEvent e){}//end
   private RenderingHints m_rHint;
   private Image m_machine;
+  private Image m_techGuy;
   private Image m_trash;
   private Image m_oneDH;
   private Image m_twoDH;
@@ -250,6 +283,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
   //these are functionality vars
   private int m_money;
   private MachineState m_state;
+  private PowerState m_powerstate;
 }
 
 class Movable{
@@ -305,4 +339,56 @@ enum MovableType{
   TWO_DH,
   COFFEE_SMALL,
   COFFEE_BIG
+}
+
+
+class Tech extends JFrame{
+  public Tech(CoffeeMachine machine){
+    //init
+    setSize(200,200);
+    setTitle("Tech Controls");
+    setResizable(false);
+    setLocationRelativeTo(null);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setVisible(true);
+    this.machine = machine;
+
+    Container contentPane = getContentPane();
+    contentPane.setLayout(new GridLayout(4,1));
+
+    //buttons
+    bTogglePower = new JButton("Eteindre");
+    bAddMoney = new JButton("Ajouter Argent");
+    bRemMoney = new JButton("Enlever Argent");
+    bAddCups = new JButton("Ajouter Gobelets");
+
+    bTogglePower.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        togglePower();
+      }
+    });
+
+    add(bTogglePower,BorderLayout.CENTER);
+    add(bAddMoney,BorderLayout.CENTER);
+    add(bRemMoney,BorderLayout.CENTER);
+    add(bAddCups,BorderLayout.CENTER);
+  }
+  private void togglePower(){
+    if(machine.getPowerState() == PowerState.ON){
+      this.bTogglePower.setText("Allumer");
+    }
+    else{
+      this.bTogglePower.setText("Eteindre");
+    }
+    machine.togglePower();
+  }
+  private CoffeeMachine machine;
+  private JButton bTogglePower;
+  private JButton bAddMoney;
+  private JButton bRemMoney;
+  private JButton bAddCups;
+}
+
+enum PowerState{
+  ON,OFF
 }
