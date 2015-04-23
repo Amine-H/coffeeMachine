@@ -69,6 +69,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     if(this.availableCups < 1){
       return;
     }
+    this.availableCups--;
     if(m_coffeeSlot == null){
       Movable petit = new Movable(MovableType.COFFEE_SMALL);
       petit.setX(212);
@@ -85,6 +86,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
     if(this.availableCups < 1){
       return;
     }
+    this.availableCups--;
     if(m_coffeeSlot == null){
       Movable big = new Movable(MovableType.COFFEE_BIG);
       big.setX(212);
@@ -102,6 +104,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       return;
     }
     this.m_money -= money;
+    this.availableMoney -= money;
     Movable drahm = new Movable((money == 1)?MovableType.ONE_DH:MovableType.TWO_DH);
     drahm.setX(126);
     drahm.setY(440);
@@ -113,6 +116,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
       return;
     }
     this.m_money += money;
+    this.availableMoney += money;
     switch(m_state){
       case STATE_ZERO://insert 1 or two dh and go to next state
         if(money == 1){
@@ -258,6 +262,7 @@ public class CoffeeMachine extends JComponent implements MouseMotionListener,Mou
         m_refundSlot = null;
       }
     }
+    this.repaint();//all done, repaint
   }
 	public void mouseMoved(MouseEvent e){
     if(isHodling()){
@@ -376,7 +381,7 @@ class Tech extends JFrame{
     setTitle("Tech Controls");
     setResizable(false);
     setLocationRelativeTo(null);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     setVisible(true);
     this.machine = machine;
 
@@ -384,8 +389,14 @@ class Tech extends JFrame{
     contentPane.setLayout(new GridLayout(4,1));
 
     //buttons
-    bTogglePower = new JButton("Eteindre");
-    bTogglePower.setBackground(Color.RED);
+    bTogglePower = new JButton();
+    if(machine.getPowerState() == PowerState.ON){
+      this.bTogglePower.setText("Eteindre");
+      this.bTogglePower.setBackground(Color.RED);
+    }else{
+      this.bTogglePower.setText("Allumer");
+      this.bTogglePower.setBackground(Color.GREEN);
+    }
     bAddMoney = new JButton("Ajouter Argent");
     bRemMoney = new JButton("Enlever Argent");
     bAddCups = new JButton("Ajouter Gobelets");
